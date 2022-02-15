@@ -1,23 +1,25 @@
+import 'dart:ffi';
+
+import 'package:chit_chat/logo_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 
-class SignUpPage extends StatelessWidget {
+
+class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return false ? const OTTPPage() :const PhonePage();
-  }
+  _SignUpPageState createState() => _SignUpPageState();
 }
 
-class PhonePage extends StatelessWidget {
-  const PhonePage({Key? key}) : super(key: key);
+class _SignUpPageState extends State<SignUpPage> {
+  String verifyID="";
+  bool codeSent=false;
+  bool loading = false;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  @override
-  Widget build(BuildContext context) {
-    bool loading = false;
-    FirebaseAuth _auth = FirebaseAuth.instance;
+  phoneWidget(BuildContext context) {
+
     String phoneNumber = "";
     return Scaffold(
       body: Column(
@@ -39,23 +41,31 @@ class PhonePage extends StatelessWidget {
           ElevatedButton(
             onPressed: () async {
               if (phoneNumber.isNotEmpty) {
-                loading = true;
+                setState(() {
+                  loading = true;
+                });
+
                 await _auth.verifyPhoneNumber(
                     phoneNumber: phoneNumber,
                     verificationCompleted: (phoneAuthCred) {
                       print(phoneAuthCred.smsCode);
                     },
                     verificationFailed: (verificationFailed) {
-                      loading = false;
+                      setState(() {
+                        loading = false;
+                      });
                       print(verificationFailed.message.toString());
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content:
-                              Text(verificationFailed.message.toString())));
+                          Text(verificationFailed.message.toString())));
                     },
                     codeSent: (verificationID, resendingToken) {
-                      loading = false;
+                      setState(() {
+                        codeSent=true;
+                        loading = false;
+                      });
+                      verifyID=verificationID;
                       print(verificationID.toString());
-
                     },
                     codeAutoRetrievalTimeout: (verificationID) {});
               }
@@ -73,28 +83,63 @@ class PhonePage extends StatelessWidget {
       ),
     );
   }
-}
 
-class OTTPPage extends StatelessWidget {
-  const OTTPPage({Key? key}) : super(key: key);
+  void signWithPhoneCredit(PhoneAuthCredential phoneAuthCredential) async{
+    try{
+      setState(() {
+        loading=true;
+      });
+      final authCreditenial = await _auth.signInWithCredential(phoneAuthCredential);
+      setState(() {
+        loading=false;
+      });
+      if(_auth.currentUser != null) {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const LogoPage()));
+      }
+    }on FirebaseException catch (e){
+      setState(() {
+        loading=false;
+      });
+    }
+  }
 
-  @override
-  Widget build(BuildContext context) {
-    String OTTP ="";
+  oTTPWidget(BuildContext context) {
+    String OTTP = "";
     return Scaffold(
       body: Column(
         children: <Widget>[
-          TextField(keyboardType: TextInputType.phone,
+          TextField(
+            keyboardType: TextInputType.phone,
             decoration: const InputDecoration(
                 border: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.black, width: 2.0)),
-                hintText: '+123456',
+                hintText: '313566',
                 labelText: 'SMS Code'),
             onChanged: (number) {
               OTTP = number;
-            },)
+            },
+          ),ElevatedButton(
+            onPressed: () {
+              if(OTTP.isNotEmpty) {
+                final phoneCredential = PhoneAuthProvider.credential(verificationId: verifyID, smsCode: OTTP);
+                signWithPhoneCredit(phoneCredential);
+              }
+            },
+            child: const Text(
+              "Continue",
+              style: TextStyle(fontSize: 20),
+            ),
+            style: ElevatedButton.styleFrom(
+                onPrimary: Colors.black, minimumSize: const Size(300, 60)),
+          )
         ],
       ),
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: codeSent ? oTTPWidget(context): phoneWidget(context)   ,);
   }
 }
