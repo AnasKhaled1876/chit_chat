@@ -1,13 +1,14 @@
 import 'dart:ffi';
 
 import 'package:chit_chat/logo_page.dart';
+import 'package:chit_chat/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
-
+  static final  FirebaseAuth auth = FirebaseAuth.instance;
   @override
   _SignUpPageState createState() => _SignUpPageState();
 }
@@ -16,7 +17,7 @@ class _SignUpPageState extends State<SignUpPage> {
   String verifyID="";
   bool codeSent=false;
   bool loading = false;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+
 
   phoneWidget(BuildContext context) {
 
@@ -45,7 +46,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   loading = true;
                 });
 
-                await _auth.verifyPhoneNumber(
+                await SignUpPage.auth.verifyPhoneNumber(
                     phoneNumber: phoneNumber,
                     verificationCompleted: (phoneAuthCred) {
                       print(phoneAuthCred.smsCode);
@@ -89,12 +90,12 @@ class _SignUpPageState extends State<SignUpPage> {
       setState(() {
         loading=true;
       });
-      final authCreditenial = await _auth.signInWithCredential(phoneAuthCredential);
+      final authCreditenial = await SignUpPage.auth.signInWithCredential(phoneAuthCredential);
       setState(() {
         loading=false;
       });
-      if(_auth.currentUser != null) {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const LogoPage()));
+      if(SignUpPage.auth.currentUser != null) {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfilePage()));
       }
     }on FirebaseException catch (e){
       setState(() {
