@@ -1,7 +1,4 @@
-import 'dart:ffi';
-
-import 'package:chit_chat/logo_page.dart';
-import 'package:chit_chat/profile_page.dart';
+import 'package:chit_chat/Screens/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 

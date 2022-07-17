@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:chit_chat/signup_page.dart';
+import 'package:chit_chat/Screens/signup_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -43,8 +43,9 @@ class _ProfilePageState extends State<ProfilePage> {
                       ? CircleAvatar(
                           backgroundImage: FileImage(File(_image!.path)),
                         )
-                      : const CircleAvatar(
-                          backgroundImage: AssetImage("assets/logo.png")),
+                      :  CircleAvatar(
+                          child: Image.asset("assets/logo.png",fit: BoxFit.fill),
+                  ),
                 ),
                 const SizedBox(height: 20,),
                 ElevatedButton(
@@ -70,7 +71,7 @@ class _ProfilePageState extends State<ProfilePage> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15.0),
               ),
-              color: Colors.black54,
+              color: const Color(0xFF245780),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
@@ -110,7 +111,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       style: TextStyle(fontSize: 20),
                     ),
                     style: ElevatedButton.styleFrom(
-                        onPrimary: Colors.black,
+                        primary: Colors.black,
                         minimumSize: const Size(300, 60)),
                   )
                 ],

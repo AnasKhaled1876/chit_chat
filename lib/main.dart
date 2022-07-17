@@ -1,5 +1,6 @@
-import 'package:chit_chat/logo_page.dart';
-import 'package:chit_chat/profile_page.dart';
+import 'package:chit_chat/Screens/logo_page.dart';
+import 'package:chit_chat/Screens/main_screen.dart';
+import 'package:chit_chat/Screens/profile_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: ProfilePage(),
+      home: MainScreen(),
     );
   }
 }

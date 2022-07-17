@@ -1,4 +1,4 @@
-import 'package:chit_chat/signup_page.dart';
+import 'package:chit_chat/Screens/signup_page.dart';
 import 'package:flutter/material.dart';
 
 class LogoPage extends StatelessWidget {
