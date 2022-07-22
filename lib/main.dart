@@ -4,6 +4,7 @@ import 'package:chit_chat/Screens/profile_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
+import 'Screens/messag_screen.dart';
 import 'models/contact.dart';
 
 void main() async {
@@ -22,9 +23,7 @@ class MyApp extends StatelessWidget {
       Contact("Anas", Image.asset("assets/logo.png", fit: BoxFit.fill), "ولا")
     ];
     return MaterialApp(
-      home: MainScreen(
-        contacts: contacts,
-      ),
+      home: MessageScreen(contact: contacts[0],),
     );
   }
 }
