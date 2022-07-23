@@ -4,12 +4,16 @@ import 'package:chit_chat/Screens/profile_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-import 'Screens/messag_screen.dart';
+import 'Screens/message_screen.dart';
+import 'firebase_options.dart';
+import 'models/Message.dart';
 import 'models/contact.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
@@ -22,8 +26,8 @@ class MyApp extends StatelessWidget {
     List<Contact> contacts = [
       Contact("Anas", Image.asset("assets/logo.png", fit: BoxFit.fill), "ولا")
     ];
-    return MaterialApp(
-      home: MessageScreen(contact: contacts[0],),
+    return const MaterialApp(
+      home: LogoPage(),
     );
   }
 }

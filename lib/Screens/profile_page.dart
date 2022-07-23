@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:chit_chat/Screens/main_screen.dart';
 import 'package:chit_chat/Screens/signup_page.dart';
+import 'package:chit_chat/models/contact.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -31,7 +33,6 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       body: Column(
         children: <Widget>[
-
           Expanded(
             flex: 1,
             child: Column(
@@ -43,11 +44,14 @@ class _ProfilePageState extends State<ProfilePage> {
                       ? CircleAvatar(
                           backgroundImage: FileImage(File(_image!.path)),
                         )
-                      :  CircleAvatar(
-                          child: Image.asset("assets/logo.png",fit: BoxFit.fill),
-                  ),
+                      : CircleAvatar(
+                          child:
+                              Image.asset("assets/logo.png", fit: BoxFit.fill),
+                        ),
                 ),
-                const SizedBox(height: 20,),
+                const SizedBox(
+                  height: 20,
+                ),
                 ElevatedButton(
                   onPressed: () async {
                     setState(() async {
@@ -88,7 +92,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     },
                   ),
                   ElevatedButton(
-                    onPressed: () async{
+                    onPressed: () async {
                       if (userName.isNotEmpty) {
                         List<int> imageBytes = await _image!.readAsBytes();
                         final Map<String, String> newUser = {
@@ -101,9 +105,21 @@ class _ProfilePageState extends State<ProfilePage> {
                             .collection("users")
                             .add(newUser)
                             .whenComplete(() {
-                          var snackBar = const SnackBar(content: Text('Welcome to ChitChat'));
+                          var snackBar = const SnackBar(
+                              content: Text('Welcome to ChitChat'));
                           ScaffoldMessenger.of(context).showSnackBar(snackBar);
                         });
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MainScreen(
+                              contacts: [
+                                Contact(
+                                    "ali", Image.asset("assets/logo.png"), "my")
+                              ],
+                            ),
+                          ),
+                        );
                       }
                     },
                     child: const Text(

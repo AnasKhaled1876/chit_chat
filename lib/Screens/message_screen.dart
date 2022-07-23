@@ -3,8 +3,10 @@ import 'package:chit_chat/models/contact.dart';
 import 'package:flutter/material.dart';
 
 class MessageScreen extends StatefulWidget {
-  const MessageScreen({Key? key, required this.contact}) : super(key: key);
+  const MessageScreen({Key? key, required this.contact, required this.messages})
+      : super(key: key);
   final Contact contact;
+  final List<Message> messages;
 
   @override
   State<MessageScreen> createState() => _MessageScreenState();
@@ -50,8 +52,15 @@ class _MessageScreenState extends State<MessageScreen> {
       body: SafeArea(
         child: Column(
           children: <Widget>[
-            Expanded(child: ListView.builder(
-                itemBuilder: (context, index) => MessageBubble())),
+            Expanded(
+              child: ListView.builder(
+                itemBuilder: (context, index) => MessageBubble(
+                  message: widget.messages[index],
+                  contact: widget.contact,
+                ),
+                itemCount: widget.messages.length,
+              ),
+            ),
             const TextingBar(),
           ],
         ),
@@ -61,16 +70,58 @@ class _MessageScreenState extends State<MessageScreen> {
 }
 
 class MessageBubble extends StatelessWidget {
-  const MessageBubble({Key? key}) : super(key: key);
+  const MessageBubble({Key? key, required this.message, required this.contact})
+      : super(key: key);
+  final Message message;
+  final Contact contact;
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: ,
+      mainAxisAlignment:
+          message.isSender ? MainAxisAlignment.end : MainAxisAlignment.start,
+      children: <Widget>[
+        if (!message.isSender) ...[
+          CircleAvatar(
+            child: contact.image,
+          ),
+          const SizedBox(
+            width: 7,
+          )
+        ],
+        ChatMessage(message: message)
+      ],
     );
   }
 }
 
+class ChatMessage extends StatelessWidget {
+  const ChatMessage({
+    Key? key,
+    required this.message,
+  }) : super(key: key);
+
+  final Message message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 7, horizontal: 8),
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+          color: message.isSender
+              ? Colors.blue.withOpacity(0.9)
+              : Colors.blue.withOpacity(0.2),
+          borderRadius: BorderRadius.circular(15)),
+      child: Text(
+        message.messageText,
+        style: TextStyle(
+            fontSize: 16,
+            color: message.isSender ? Colors.white : Colors.black),
+      ),
+    );
+  }
+}
 
 class TextingBar extends StatelessWidget {
   const TextingBar({
@@ -85,9 +136,7 @@ class TextingBar extends StatelessWidget {
         boxShadow: const [
           BoxShadow(offset: Offset(0, 4), blurRadius: 32, color: Colors.black),
         ],
-        color: Theme
-            .of(context)
-            .scaffoldBackgroundColor,
+        color: Theme.of(context).scaffoldBackgroundColor,
       ),
       child: SafeArea(
         child: Row(
@@ -102,7 +151,7 @@ class TextingBar extends StatelessWidget {
             Expanded(
               child: Container(
                 padding:
-                const EdgeInsets.symmetric(vertical: 7, horizontal: 10),
+                    const EdgeInsets.symmetric(vertical: 7, horizontal: 10),
                 decoration: BoxDecoration(
                   color: Colors.blue.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(10),

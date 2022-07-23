@@ -2,22 +2,20 @@ import 'package:chit_chat/Screens/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
-  static final  FirebaseAuth auth = FirebaseAuth.instance;
+  static final FirebaseAuth auth = FirebaseAuth.instance;
+
   @override
   _SignUpPageState createState() => _SignUpPageState();
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-  String verifyID="";
-  bool codeSent=false;
+  String verifyID = "";
+  bool codeSent = false;
   bool loading = false;
 
-
   phoneWidget(BuildContext context) {
-
     String phoneNumber = "";
     return Scaffold(
       body: Column(
@@ -55,14 +53,14 @@ class _SignUpPageState extends State<SignUpPage> {
                       print(verificationFailed.message.toString());
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content:
-                          Text(verificationFailed.message.toString())));
+                              Text(verificationFailed.message.toString())));
                     },
                     codeSent: (verificationID, resendingToken) {
                       setState(() {
-                        codeSent=true;
+                        codeSent = true;
                         loading = false;
                       });
-                      verifyID=verificationID;
+                      verifyID = verificationID;
                       print(verificationID.toString());
                     },
                     codeAutoRetrievalTimeout: (verificationID) {});
@@ -82,30 +80,33 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  void signWithPhoneCredit(PhoneAuthCredential phoneAuthCredential) async{
-    try{
+  void signWithPhoneCredit(PhoneAuthCredential phoneAuthCredential) async {
+    try {
       setState(() {
-        loading=true;
+        loading = true;
       });
-      final authCreditenial = await SignUpPage.auth.signInWithCredential(phoneAuthCredential);
+      final authCreditenial =
+          await SignUpPage.auth.signInWithCredential(phoneAuthCredential);
       setState(() {
-        loading=false;
+        loading = false;
       });
-      if(SignUpPage.auth.currentUser != null) {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfilePage()));
+      if (SignUpPage.auth.currentUser != null) {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const ProfilePage()));
       }
-    }on FirebaseException catch (e){
+    } on FirebaseException catch (e) {
       setState(() {
-        loading=false;
+        loading = false;
       });
     }
   }
 
-  oTTPWidget(BuildContext context) {
+  OTTPWidget(BuildContext context) {
     String OTTP = "";
     return Scaffold(
       body: Column(
         children: <Widget>[
+          const Spacer(),
           TextField(
             keyboardType: TextInputType.phone,
             decoration: const InputDecoration(
@@ -116,10 +117,13 @@ class _SignUpPageState extends State<SignUpPage> {
             onChanged: (number) {
               OTTP = number;
             },
-          ),ElevatedButton(
+          ),
+          const SizedBox(height: 20,),
+          ElevatedButton(
             onPressed: () {
-              if(OTTP.isNotEmpty) {
-                final phoneCredential = PhoneAuthProvider.credential(verificationId: verifyID, smsCode: OTTP);
+              if (OTTP.isNotEmpty) {
+                final phoneCredential = PhoneAuthProvider.credential(
+                    verificationId: verifyID, smsCode: OTTP);
                 signWithPhoneCredit(phoneCredential);
               }
             },
@@ -129,7 +133,8 @@ class _SignUpPageState extends State<SignUpPage> {
             ),
             style: ElevatedButton.styleFrom(
                 onPrimary: Colors.black, minimumSize: const Size(300, 60)),
-          )
+          ),
+          const Spacer()
         ],
       ),
     );
@@ -138,6 +143,7 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: codeSent ? oTTPWidget(context): phoneWidget(context)   ,);
+      body: codeSent ? OTTPWidget(context) : phoneWidget(context),
+    );
   }
 }
